@@ -1,0 +1,7 @@
+/node_modules
+/yarn-error.log
+/coverage
+/request.http
+./database.json
+/dist
+/.env
