@@ -9,30 +9,30 @@ export enum UserRole {
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
-  id: number;
+    id: number;
 
   @Column('varchar', {
     length: 50,
   })
-  email: string;
+    email: string;
 
   @Column('varchar', {
     length: 50,
   })
-  username: string;
+    username: string;
 
   @Column('varchar', {
     length: 100,
   })
-  password: string;
+    password: string;
 
   @Column({
     type: 'enum',
     enum: UserRole,
     default: UserRole.USER,
   })
-  role: UserRole;
+    role: UserRole;
 
   @OneToMany(() => CurriculumVitae, (cv) => cv.user)
-  curriculum_vitaes: CurriculumVitae[];
+    curriculum_vitaes: CurriculumVitae[];
 }

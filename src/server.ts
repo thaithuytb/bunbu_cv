@@ -1,11 +1,21 @@
-import makeApp from './app';
-import 'reflect-metadata';
-import configOrm from './database/ormconfig';
+import { Application } from 'express';
 import { DataSource } from 'typeorm';
+import 'reflect-metadata';
+import createServer from './app';
+import configOrm from './database/ormconfig';
+
+export const db = new DataSource(configOrm);
 
 const PORT = process.env.PORT || 8888;
-const db = new DataSource(configOrm);
 
-const app = makeApp(db);
-
-app.listen(PORT, () => console.log(`Server is running on port: ${PORT}`));
+const app: Application = createServer();
+app.listen(PORT, () => {
+  db.initialize()
+    .then(() => {
+      console.log('Data Source has been initialized!');
+    })
+    .catch((err) => {
+      console.error('Error during Data Source initialization:', err);
+    });
+  return console.log(`Server is running on port: ${PORT}`);
+});

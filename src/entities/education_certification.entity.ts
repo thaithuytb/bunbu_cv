@@ -10,24 +10,24 @@ import {
 @Entity('education_certifications')
 export class EducationCertification {
   @PrimaryGeneratedColumn()
-  id: number;
+    id: number;
 
   @Column('varchar', {
     length: 50,
   })
-  name: string;
+    name: string;
 
   @Column('varchar', {
     length: 50,
   })
-  time: string;
+    time: string;
 
   @Column('varchar', {
     length: 50,
   })
-  major: string;
+    major: string;
 
   @ManyToOne(() => CurriculumVitae, (cv) => cv.education_certifications)
   @JoinColumn({ name: 'cv_id' })
-  curriculum_vitae: CurriculumVitae;
+    curriculum_vitae: CurriculumVitae;
 }
