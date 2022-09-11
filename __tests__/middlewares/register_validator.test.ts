@@ -5,12 +5,9 @@ import mockResponse from '../../mocks/mockResponse';
 import mockNextFunction from '../../mocks/mockNextFunction';
 import * as RegisterValidator from '../../src/middlewares/schema_validators/register_validator';
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 describe('Middleware validator', () => {
-  afterEach(async () => {
-    await sleep(2000);
-    await jest.clearAllMocks();
+  afterEach(() => {
+    jest.clearAllMocks();
   });
   test('Should be return code 400 and message err when validator error', async () => {
     const req = mockRequest({
