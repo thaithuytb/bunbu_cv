@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import argon2 from 'argon2';
 import * as UserService from '../../src/services/user.service';
 import * as UserController from '../../src/controllers/user.controller';
 import { db } from '../../src/server';
@@ -20,36 +21,39 @@ describe('UserService', () => {
     beforeEach(() => {
       jest.clearAllMocks();
     });
-    test('Should be return a user when email already exits', async () => {
-      const payload = 'ngoquangthai29112001@gmail.com';
 
-      const mockQueryGetOneBy = jest
-        .fn()
-        .mockImplementation(() => expect.any(Promise));
-
+    test('Should be return an user when email already exist', async () => {
+      const mockQueryFindOneBy = jest.fn().mockImplementation(() =>
+        Promise.resolve({
+          email: 'ngo@gmail.com',
+          id: expect.any(Number),
+          username: expect.any(String),
+          password: expect.any(String),
+          role: expect.any(Number),
+        })
+      );
       db.getRepository = jest.fn().mockReturnValue({
-        findOneBy: mockQueryGetOneBy,
+        findOneBy: mockQueryFindOneBy,
       });
 
-      const res = await UserService.getUserByEmail(payload);
+      const res = await UserService.getUserByEmail('ngo@gmail.com');
 
-      expect(mockQueryGetOneBy).toBeCalledTimes(1);
-      expect(res).toEqual(expect.any(Promise));
+      expect(mockQueryFindOneBy).toBeCalledTimes(1);
+      expect(res).toHaveProperty('email');
     });
-    test('Should be return a null when email not exits', async () => {
-      const payloadToGet = 'ngoquangthai29112001@gmail.com';
 
-      const mockQueryGetOneBy = jest
+    test('Should be return null when email not found', async () => {
+      const mockQueryFindOneBy = jest
         .fn()
-        .mockImplementation(() => Promise.resolve(null));
+        .mockImplementationOnce(() => Promise.resolve(null));
 
       db.getRepository = jest.fn().mockReturnValue({
-        findOneBy: mockQueryGetOneBy,
+        findOneBy: mockQueryFindOneBy,
       });
 
-      const res = await UserService.getUserByEmail(payloadToGet);
+      const res = await UserService.getUserByEmail('ngo@gmail.com');
 
-      expect(mockQueryGetOneBy).toBeCalledTimes(1);
+      expect(mockQueryFindOneBy).toBeCalledTimes(1);
       expect(res).toEqual(null);
     });
   });
@@ -115,10 +119,65 @@ describe('UserService', () => {
   });
 });
 
-describe('UserController', () => {
+describe('verify admin', () => {
+  beforeAll(() => {
+    jest.clearAllMocks();
+  });
   afterEach(() => {
     jest.clearAllMocks();
   });
+  test('Should be return code 401 when email is undefined', async () => {
+    const req = mockRequest({});
+    const res = mockResponse();
+    const next = mockNextFunction;
+
+    await verifyAdmin(req, res, next);
+
+    expect(next).toBeCalledTimes(0);
+    expect(res.state.status).toEqual(401);
+    expect(res.state.json).toEqual({
+      success: false,
+      message: 'Unauthorized',
+    });
+  });
+
+  test('Should be return code 403 when user is not admin', async () => {
+    const req = mockRequest({
+      email: 'thaingo@gmail.com',
+    });
+    const res = mockResponse();
+    const next = mockNextFunction;
+    const mockGetUserByEmail = jest
+      .spyOn(UserService, 'getUserByEmail')
+      .mockImplementation(() => Promise.resolve({ role: 2 } as User));
+
+    await verifyAdmin(req, res, next);
+
+    expect(mockGetUserByEmail).toBeCalledTimes(1);
+    expect(next).toBeCalledTimes(0);
+    expect(res.state.status).toEqual(403);
+    expect(res.state.json).toEqual({
+      success: false,
+      message: 'Forbidden',
+    });
+  });
+  test('Should be call nextFunction', async () => {
+    const req = mockRequest({
+      email: 'thaingo@gmail.com',
+    });
+    const res = mockResponse();
+    const next = mockNextFunction;
+    const mockGetUserByEmail = jest
+      .spyOn(UserService, 'getUserByEmail')
+      .mockImplementation(() => Promise.resolve({ role: 1 } as User));
+
+    await verifyAdmin(req, res, next);
+
+    expect(mockGetUserByEmail).toBeCalledTimes(1);
+    expect(next).toBeCalledTimes(1);
+  });
+});
+describe('UserController', () => {
   describe('UserController/register', () => {
     beforeEach(() => {
       jest.clearAllMocks();
@@ -189,63 +248,129 @@ describe('UserController', () => {
       expect(res.state.json).toHaveProperty('data');
     });
   });
-});
-
-describe('verify admin', () => {
-  beforeAll(() => {
-    jest.clearAllMocks();
-  });
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-  test('Should be return code 401 when email is undefined', async () => {
-    const req = mockRequest({});
-    const res = mockResponse();
-    const next = mockNextFunction;
-
-    await verifyAdmin(req, res, next);
-
-    expect(next).toBeCalledTimes(0);
-    expect(res.state.status).toEqual(401);
-    expect(res.state.json).toEqual({
-      success: false,
-      message: 'Unauthorized',
+  describe('UserController/login', () => {
+    beforeAll(() => {
+      jest.clearAllMocks();
     });
-  });
-
-  test('Should be return code 403 when user is not admin', async () => {
-    const req = mockRequest({
-      email: 'thaingo@gmail.com',
+    afterEach(() => {
+      jest.resetAllMocks();
     });
-    const res = mockResponse();
-    const next = mockNextFunction;
-    const mockGetUserByEmail = jest
-      .spyOn(UserService, 'getUserByEmail')
-      .mockImplementation(() => Promise.resolve({ role: 2 } as User));
 
-    await verifyAdmin(req, res, next);
+    test('Should be return code 400 and error when invalid email supplied', async () => {
+      const mockGetUserByEmail = jest
+        .spyOn(UserService, 'getUserByEmail')
+        .mockImplementation(() => Promise.resolve(null));
 
-    expect(mockGetUserByEmail).toBeCalledTimes(1);
-    expect(next).toBeCalledTimes(0);
-    expect(res.state.status).toEqual(403);
-    expect(res.state.json).toEqual({
-      success: false,
-      message: 'Forbidden',
+      const req = mockRequest({
+        payloadBody: {
+          email: 'ngo@gmail.com',
+          password: '123456',
+        },
+      });
+      const res = mockResponse();
+
+      await UserController.login(req, res);
+
+      expect(mockGetUserByEmail).toBeCalledTimes(1);
+      expect(res.state.status).toEqual(400);
+      expect(res.state.json).toEqual({
+        success: false,
+        message: expect.any(String),
+      });
     });
-  });
-  test('Should be call nextFunction', async () => {
-    const req = mockRequest({
-      email: 'thaingo@gmail.com',
+
+    test('Should be return code 500 and error when have error from server', async () => {
+      const mockGetUserByEmail = jest
+        .spyOn(UserService, 'getUserByEmail')
+        .mockImplementation(() => Promise.reject());
+
+      const req = mockRequest({
+        payloadBody: {
+          email: 'ngo@gmail.com',
+          password: '123456',
+        },
+      });
+      const res = mockResponse();
+
+      await UserController.login(req, res);
+
+      expect(mockGetUserByEmail).toBeCalledTimes(1);
+      expect(res.state.status).toEqual(500);
+      expect(res.state.json).toHaveProperty('errors');
     });
-    const res = mockResponse();
-    const next = mockNextFunction;
-    const mockGetUserByEmail = jest
-      .spyOn(UserService, 'getUserByEmail')
-      .mockImplementation(() => Promise.resolve({ role: 1 } as User));
 
-    await verifyAdmin(req, res, next);
+    test('Should be return code 400 and error when invalid password supplied', async () => {
+      const mockGetUserByEmail = jest
+        .spyOn(UserService, 'getUserByEmail')
+        .mockImplementation(() =>
+          Promise.resolve({
+            email: 'ngo@gmail.com',
+            id: expect.any(Number),
+          } as User)
+        );
 
-    expect(mockGetUserByEmail).toBeCalledTimes(1);
-    expect(next).toBeCalledTimes(1);
+      const mockVerifyPassword = jest
+        .spyOn(argon2, 'verify')
+        .mockImplementation(() => Promise.resolve(false));
+
+      const req = mockRequest({
+        payloadBody: {
+          email: 'ngo@gmail.com',
+          password: '123456',
+        },
+      });
+      const res = mockResponse();
+
+      await UserController.login(req, res);
+
+      expect(mockGetUserByEmail).toBeCalledTimes(1);
+      expect(mockVerifyPassword).toBeCalledTimes(1);
+      expect(res.state.status).toEqual(400);
+      expect(res.state.json).toEqual({
+        success: false,
+        message: expect.any(String),
+      });
+    });
+
+    test('Should be return 200 code when email and password valid', async () => {
+      const mockGetUserByEmail = jest
+        .spyOn(UserService, 'getUserByEmail')
+        .mockImplementation(() =>
+          Promise.resolve({
+            email: 'ngo@gmail.com',
+            id: expect.any(Number),
+          } as User)
+        );
+
+      const mockVerifyPassword = jest
+        .spyOn(argon2, 'verify')
+        .mockImplementation(() => Promise.resolve(true));
+
+      const mockCreateToken = jest
+        .spyOn(UserService, 'createToken')
+        .mockImplementation(() => Promise.resolve('mock access_token'));
+
+      const mockCreateRefreshToken = jest
+        .spyOn(UserService, 'createToken')
+        .mockImplementation(() => Promise.resolve('mock refresh_token'));
+
+      const req = mockRequest({
+        payloadBody: {
+          email: 'ngo@gmail.com',
+          password: '123456',
+        },
+      });
+      const res = mockResponse();
+
+      await UserController.login(req, res);
+
+      expect(mockGetUserByEmail).toBeCalledTimes(1);
+      expect(mockVerifyPassword).toBeCalledTimes(1);
+      expect(mockCreateToken).toBeCalledTimes(1);
+      expect(mockCreateRefreshToken).toBeCalledTimes(1);
+      expect(res.state.status).toEqual(200);
+      expect(res.state.json).toHaveProperty('access_token');
+      expect(res.state.json).toHaveProperty('refresh_token');
+    });
   });
 });
