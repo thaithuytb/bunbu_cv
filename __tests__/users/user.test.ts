@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import argon2 from 'argon2';
+import { UpdateResult } from 'typeorm';
 import * as UserService from '../../src/services/user.service';
 import * as UserController from '../../src/controllers/user.controller';
 import { db } from '../../src/server';
@@ -117,6 +118,53 @@ describe('UserService', () => {
       expect(res).toHaveProperty('refresh_token');
     });
   });
+
+  describe('UserService/getUserById', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+    test('Should be return a user when id already exits', async () => {
+      const mockQueryGetOneBy = jest
+        .fn()
+        .mockImplementation(() => expect.any(Promise));
+
+      db.getRepository = jest.fn().mockReturnValue({
+        findOneBy: mockQueryGetOneBy,
+      });
+
+      const res = await UserService.getUserById(1);
+
+      expect(mockQueryGetOneBy).toBeCalledTimes(1);
+      expect(res).toEqual(expect.any(Promise));
+    });
+    test('Should be return a null when id not exits', async () => {
+      const mockQueryGetOneBy = jest
+        .fn()
+        .mockImplementation(() => Promise.resolve(null));
+
+      db.getRepository = jest.fn().mockReturnValue({
+        findOneBy: mockQueryGetOneBy,
+      });
+
+      const res = await UserService.getUserById(1);
+
+      expect(mockQueryGetOneBy).toBeCalledTimes(1);
+      expect(res).toEqual(null);
+    });
+  });
+
+  describe('UserService/updateUsernameById', () => {
+    test('Should be update username by id', async () => {
+      const mockQueryUpdateUserNameById = jest.fn(() => Promise.resolve());
+      db.getRepository = jest.fn().mockReturnValue({
+        update: mockQueryUpdateUserNameById,
+      });
+
+      await UserService.updateUsernameById(1, 'ngoThai');
+
+      expect(mockQueryUpdateUserNameById).toBeCalledTimes(1);
+    });
+  });
 });
 
 describe('verify admin', () => {
@@ -177,6 +225,7 @@ describe('verify admin', () => {
     expect(next).toBeCalledTimes(1);
   });
 });
+
 describe('UserController', () => {
   describe('UserController/register', () => {
     beforeEach(() => {
@@ -197,6 +246,49 @@ describe('UserController', () => {
       const res = mockResponse();
 
       await UserController.register(req, res);
+    });
+  });
+});
+
+describe('UserController', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+  describe('UserController/info', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    test('Should be return code 404 when userId is undefined', async () => {
+      const req = mockRequest({
+        payloadBody: {
+          username: 'thaiNgo',
+        },
+      });
+      const res = mockResponse();
+
+      await UserController.info(req, res);
+
+      expect(res.state.status).toEqual(404);
+      expect(res.state.json).toEqual({
+        success: false,
+        message: 'User not found',
+      });
+    });
+    test('Should be return code 500 when have error form server', async () => {
+      jest
+        .spyOn(UserService, 'getUserById')
+        .mockRejectedValue(() => Promise.reject());
+
+      const req = mockRequest({
+        payloadBody: {
+          username: 'thaiNgo',
+        },
+        userId: 1,
+      });
+      const res = mockResponse();
+
+      await UserController.info(req, res);
 
       expect(res.state.status).toEqual(500);
       expect(res.state.json).toHaveProperty('errors');
@@ -248,6 +340,7 @@ describe('UserController', () => {
       expect(res.state.json).toHaveProperty('data');
     });
   });
+
   describe('UserController/login', () => {
     beforeAll(() => {
       jest.clearAllMocks();
@@ -371,6 +464,54 @@ describe('UserController', () => {
       expect(res.state.status).toEqual(200);
       expect(res.state.json).toHaveProperty('access_token');
       expect(res.state.json).toHaveProperty('refresh_token');
+    });
+
+    test('Should be return code 404 when user not found', async () => {
+      jest
+        .spyOn(UserService, 'getUserById')
+        .mockResolvedValue(Promise.resolve(null));
+
+      const req = mockRequest({
+        payloadBody: {
+          username: 'thaiNgo',
+        },
+        userId: 1,
+      });
+      const res = mockResponse();
+
+      await UserController.info(req, res);
+
+      expect(res.state.status).toEqual(404);
+      expect(res.state.json).toHaveProperty('message');
+    });
+
+    test('Should be return code 200 when user updated', async () => {
+      const mockGetUserById = jest
+        .spyOn(UserService, 'getUserById')
+        .mockImplementation(() =>
+          Promise.resolve({
+            email: 'abc',
+          } as User)
+        );
+
+      const mockUpdateUsernameById = jest
+        .spyOn(UserService, 'updateUsernameById')
+        .mockImplementation(() => Promise.resolve({} as UpdateResult));
+
+      const req = mockRequest({
+        payloadBody: {
+          username: 'thaiNgo',
+        },
+        userId: 1,
+      });
+      const res = mockResponse();
+
+      await UserController.info(req, res);
+
+      expect(mockGetUserById).toBeCalledTimes(1);
+      expect(mockUpdateUsernameById).toBeCalledTimes(1);
+      expect(res.state.status).toEqual(200);
+      expect(res.state.json).toHaveProperty('message');
     });
   });
 });

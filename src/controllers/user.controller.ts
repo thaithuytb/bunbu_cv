@@ -1,7 +1,7 @@
-import { hash } from 'argon2';
-import { verify } from 'argon2';
 import { Request, Response } from 'express';
+import { hash, verify } from 'argon2';
 import * as UserService from '../services/user.service';
+import RequestType from '../types/requestType';
 
 export const register = async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -68,6 +68,38 @@ export const login = async (req: Request, res: Response) => {
     });
   } catch (error) {
     return res.status(500).json({
+      success: false,
+      errors: error,
+    });
+  }
+};
+
+export const info = async (req: RequestType, res: Response) => {
+  const { userId } = req;
+  const { username } = req.body;
+  if (!userId) {
+    return res.status(404).json({
+      success: false,
+      message: 'User not found',
+    });
+  }
+
+  try {
+    const user = await UserService.getUserById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+    await UserService.updateUsernameById(userId, username);
+    return res.status(200).json({
+      success: true,
+      message: 'User already updated',
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
       errors: error,
     });
   }

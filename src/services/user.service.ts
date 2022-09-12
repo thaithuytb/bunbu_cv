@@ -1,3 +1,4 @@
+import { UpdateResult } from 'typeorm';
 import { Secret, sign } from 'jsonwebtoken';
 import { uuid } from 'uuidv4';
 import { User } from '../entities/user.entity';
@@ -45,4 +46,17 @@ export async function createUser(email: string, password: string) {
       role: user.role,
     },
   };
+}
+
+export async function getUserById(id: number): Promise<User | null> {
+  return await db.getRepository(User).findOneBy({
+    id,
+  });
+}
+
+export async function updateUsernameById(
+  id: number,
+  username: string
+): Promise<UpdateResult> {
+  return await db.getRepository(User).update(id, { username });
 }
