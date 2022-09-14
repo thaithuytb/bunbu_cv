@@ -65,4 +65,17 @@ routeDetailCv.patch(
   }
 );
 
+routeDetailCv.delete(
+  '/:cv_id/education_certifications/:education_certification_id',
+  (req: Request, res: Response, next: NextFunction) => {
+    verifyToken(req, res, next);
+  },
+  (req: Request, res: Response, next: NextFunction) => {
+    permissionCvs(req, res, next);
+  },
+  (req: Request, res: Response) => {
+    EducationCertificationController.deleteEducationCertification(req, res);
+  }
+);
+
 export default routeDetailCv;
