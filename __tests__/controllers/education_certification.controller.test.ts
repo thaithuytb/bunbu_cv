@@ -1,15 +1,16 @@
 import mockRequest from '../../mocks/mockRequest';
 import mockResponse from '../../mocks/mockResponse';
-import * as CvsController from '../../src/controllers/cvs.controller';
+import * as EducationCertificationController from '../../src/controllers/education_certication.controller';
 import { CurriculumVitae } from '../../src/entities/curriculum_vitae.entity';
 import { EducationCertification } from '../../src/entities/education_certification.entity';
 import * as CvsService from '../../src/services/cvs.service';
+import * as EducationCertificationService from '../../src/services/education_certification.service';
 
-describe('Controller', () => {
+describe('Controller/education_certification', () => {
   beforeAll(() => {
     jest.clearAllMocks();
   });
-  describe('Controller/createEducationCertification', () => {
+  describe('createEducationCertification', () => {
     afterEach(() => {
       jest.clearAllMocks();
     });
@@ -32,7 +33,10 @@ describe('Controller', () => {
           Promise.reject({ error: 'Server error query' })
         );
 
-      await CvsController.createEducationCertification(req, res);
+      await EducationCertificationController.createEducationCertification(
+        req,
+        res
+      );
 
       expect(res.state.status).toEqual(500);
       expect(res.state.json).toHaveProperty('errors');
@@ -43,7 +47,10 @@ describe('Controller', () => {
         .spyOn(CvsService, 'findOneCvById')
         .mockImplementation(() => Promise.resolve(null));
 
-      await CvsController.createEducationCertification(req, res);
+      await EducationCertificationController.createEducationCertification(
+        req,
+        res
+      );
 
       expect(res.state.status).toEqual(404);
       expect(res.state.json).toEqual({
@@ -58,12 +65,15 @@ describe('Controller', () => {
         .mockImplementation(() => Promise.resolve({} as CurriculumVitae));
 
       jest
-        .spyOn(CvsService, 'createOneEducationCertification')
+        .spyOn(EducationCertificationService, 'createOneEducationCertification')
         .mockImplementation(() =>
           Promise.resolve({} as EducationCertification)
         );
 
-      await CvsController.createEducationCertification(req, res);
+      await EducationCertificationController.createEducationCertification(
+        req,
+        res
+      );
 
       expect(res.state.status).toEqual(201);
       expect(res.state.json).toHaveProperty('educationCertification');

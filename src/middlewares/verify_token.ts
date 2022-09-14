@@ -1,9 +1,8 @@
 import { verify, Secret, JwtPayload } from 'jsonwebtoken';
 import { NextFunction, Response } from 'express';
 import RequestType from '../types/requestType';
-import * as UserService from '../services/user.service';
 
-const verifyUser = async (
+const verifyToken = async (
   req: RequestType,
   res: Response,
   next: NextFunction
@@ -21,22 +20,22 @@ const verifyUser = async (
       token,
       process.env.ACCESS_TOKEN_SECRET as Secret
     )) as JwtPayload;
+
     if (!decodeToken.id || !decodeToken.email) {
       return res.status(401).json({
         success: false,
         message: 'Unauthorized',
       });
     }
-    const checkUser = await UserService.getUserByEmail(decodeToken.email);
-    if (!checkUser) {
-      return res.status(403).json({
-        success: false,
-        message: 'Forbidden',
-      });
-    }
-    req.user = checkUser;
+    req.user_id = decodeToken.id;
+    req.email = decodeToken.email;
     next();
-  } catch (error) {}
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: 'Token expires',
+    });
+  }
 };
 
-export default verifyUser;
+export default verifyToken;

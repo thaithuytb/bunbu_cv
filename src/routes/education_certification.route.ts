@@ -1,14 +1,14 @@
 import express, { NextFunction, Request, Response } from 'express';
-import verifyUser from '../middlewares/verify_user';
-import * as CvsController from '../controllers/cvs.controller';
+import verifyToken from '../middlewares/verify_token';
+import * as CvsController from '../controllers/education_certication.controller';
 import permissionCvs from '../middlewares/permission_cvs';
 
-const routeCvs = express.Router();
+const routeEducationCertification = express.Router();
 
-routeCvs.post(
+routeEducationCertification.post(
   '/:cv_id/education_certifications/create',
   (req: Request, res: Response, next: NextFunction) => {
-    verifyUser(req, res, next);
+    verifyToken(req, res, next);
   },
   (req: Request, res: Response, next: NextFunction) => {
     permissionCvs(req, res, next);
@@ -18,4 +18,4 @@ routeCvs.post(
   }
 );
 
-export default routeCvs;
+export default routeEducationCertification;
