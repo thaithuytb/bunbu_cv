@@ -8,6 +8,7 @@ import mockRequest from '../../mocks/mockRequest';
 import mockResponse from '../../mocks/mockResponse';
 jest.mock('../../src/server.ts');
 
+jest.useFakeTimers();
 describe('UserService', () => {
   afterEach(() => {
     jest.clearAllMocks();

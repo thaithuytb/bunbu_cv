@@ -6,5 +6,5 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   collectCoverage: true,
-  scriptPreprocessor: './node_modules/babel-jest'
+  scriptPreprocessor: './node_modules/babel-jest',
 };
