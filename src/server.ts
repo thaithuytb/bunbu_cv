@@ -6,7 +6,10 @@ import configOrm from './database/ormconfig';
 
 export const db = new DataSource(configOrm);
 
-const PORT = process.env.PORT || 8888;
+let PORT: any;
+if (process.env.NODE_ENV !== 'test') {
+  PORT = process.env.PORT || 8888;
+}
 
 const app: Application = createServer();
 app.listen(PORT, () => {
