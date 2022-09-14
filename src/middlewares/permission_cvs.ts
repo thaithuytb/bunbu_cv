@@ -1,6 +1,7 @@
 import RequestType from '../types/requestType';
 import { NextFunction, Response } from 'express';
 import * as CvsService from '../services/cvs.service';
+import * as UserService from '../services/user.service';
 
 const permissionCvs = async (
   req: RequestType,
@@ -8,10 +9,14 @@ const permissionCvs = async (
   next: NextFunction
 ) => {
   const { cv_id } = req.params;
-  const user = req.user;
+  const { email } = req;
   try {
-    if (user?.role == 1) {
-      return next();
+    const checkUser = await UserService.getUserByEmail(email as string);
+    if (!checkUser) {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden',
+      });
     }
     const cv = await CvsService.findOneCvByIdWithJoin(+cv_id);
     if (!cv) {
@@ -20,14 +25,22 @@ const permissionCvs = async (
         message: 'CV not found',
       });
     }
-    if (cv.user.id !== user?.id) {
+    if (checkUser.role == 1) {
+      return next();
+    }
+    if (cv.user.id !== checkUser.id) {
       return res.status(403).json({
         success: false,
         message: 'Forbidden',
       });
     }
     next();
-  } catch (error) {}
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      errors: error,
+    });
+  }
 };
 
 export default permissionCvs;

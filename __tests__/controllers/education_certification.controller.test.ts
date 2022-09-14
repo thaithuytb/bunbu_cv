@@ -1,8 +1,8 @@
 import mockRequest from '../../mocks/mockRequest';
 import mockResponse from '../../mocks/mockResponse';
-import * as CvsController from '../../src/controllers/cvs.controller';
 import { EducationCertification } from '../../src/entities/education_certification.entity';
-import * as CvsService from '../../src/services/cvs.service';
+import * as EducationCertificationController from '../../src/controllers/education_certification.controller';
+import * as EducationCertificationService from '../../src/services/education_certification.service';
 
 describe('Controller', () => {
   beforeAll(() => {
@@ -28,12 +28,18 @@ describe('Controller', () => {
 
     test('Should be return code 500', async () => {
       jest
-        .spyOn(CvsService, 'findEducationCertificationByIdAndCvId')
+        .spyOn(
+          EducationCertificationService,
+          'findEducationCertificationByIdAndCvId'
+        )
         .mockImplementation(() =>
           Promise.reject({ error: 'Server error query' })
         );
 
-      await CvsController.updateEducationCertification(req, res);
+      await EducationCertificationController.updateEducationCertification(
+        req,
+        res
+      );
 
       expect(res.state.status).toEqual(500);
       expect(res.state.json).toHaveProperty('errors');
@@ -41,10 +47,16 @@ describe('Controller', () => {
 
     test('Should be return code 404 code when education certification not found', async () => {
       jest
-        .spyOn(CvsService, 'findEducationCertificationByIdAndCvId')
+        .spyOn(
+          EducationCertificationService,
+          'findEducationCertificationByIdAndCvId'
+        )
         .mockImplementation(() => Promise.resolve(null));
 
-      await CvsController.updateEducationCertification(req, res);
+      await EducationCertificationController.updateEducationCertification(
+        req,
+        res
+      );
 
       expect(res.state.status).toEqual(404);
       expect(res.state.json).toEqual({
@@ -55,14 +67,20 @@ describe('Controller', () => {
 
     test('Should be return code 200 and new education certification', async () => {
       jest
-        .spyOn(CvsService, 'findEducationCertificationByIdAndCvId')
+        .spyOn(
+          EducationCertificationService,
+          'findEducationCertificationByIdAndCvId'
+        )
         .mockImplementation(() =>
           Promise.resolve({
             id: 1,
           } as EducationCertification)
         );
       jest
-        .spyOn(CvsService, 'updateEducationCertificationById')
+        .spyOn(
+          EducationCertificationService,
+          'updateEducationCertificationById'
+        )
         .mockImplementation(() =>
           Promise.resolve({
             id: 1,
@@ -72,7 +90,10 @@ describe('Controller', () => {
           } as EducationCertification)
         );
 
-      await CvsController.updateEducationCertification(req, res);
+      await EducationCertificationController.updateEducationCertification(
+        req,
+        res
+      );
 
       expect(res.state.status).toEqual(200);
       expect(res.state.json).toEqual(expect.any(Object));

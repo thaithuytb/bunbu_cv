@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import RequestType from '../types/requestType';
-import * as CvsService from '../services/cvs.service';
+import * as EducationCertificationService from '../services/education_certification.service';
 
 export const updateEducationCertification = async (
   req: RequestType,
@@ -11,7 +11,7 @@ export const updateEducationCertification = async (
 
   try {
     const findEducationCertification =
-      await CvsService.findEducationCertificationByIdAndCvId(
+      await EducationCertificationService.findEducationCertificationByIdAndCvId(
         +education_certification_id,
         +cv_id
       );
@@ -22,7 +22,7 @@ export const updateEducationCertification = async (
       });
     }
     const newEducationCertification =
-      await CvsService.updateEducationCertificationById(
+      await EducationCertificationService.updateEducationCertificationById(
         +education_certification_id,
         payloadBody,
         findEducationCertification
