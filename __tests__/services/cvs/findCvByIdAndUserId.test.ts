@@ -2,7 +2,7 @@ import { CurriculumVitae } from '../../../src/entities/curriculum_vitae.entity';
 import { db } from '../../../src/server';
 import * as CvsService from '../../../src/services/cvs.service';
 
-describe('findCvById', () => {
+describe('findCvByIdAndUserId', () => {
   beforeAll(() => {
     jest.clearAllMocks();
   });
@@ -10,7 +10,7 @@ describe('findCvById', () => {
     jest.clearAllMocks();
   });
   test('Should be return a cv', async () => {
-    const mockQueryFindOneBy = jest.fn().mockImplementation((id: number) =>
+    const mockQueryFindOneBy = jest.fn().mockImplementation(() =>
       Promise.resolve({
         id: 2,
         name: 'cv',
@@ -31,7 +31,7 @@ describe('findCvById', () => {
   test('Should be return a cv', async () => {
     const mockQueryFindOneBy = jest
       .fn()
-      .mockImplementation((id: number) => Promise.resolve(null));
+      .mockImplementation(() => Promise.resolve(null));
 
     db.getRepository = jest.fn().mockReturnValue({
       findOneBy: mockQueryFindOneBy,
