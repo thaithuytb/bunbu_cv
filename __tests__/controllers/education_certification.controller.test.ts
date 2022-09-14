@@ -60,7 +60,7 @@ describe('Controller/education_certification', () => {
       });
     });
 
-    test('Should be return code 200 when delete successfully', async () => {
+    test('Should be return code 204 when delete successfully', async () => {
       jest
         .spyOn(
           EducationCertificationService,
@@ -80,7 +80,7 @@ describe('Controller/education_certification', () => {
         res
       );
 
-      expect(res.state.status).toEqual(200);
+      expect(res.state.status).toEqual(204);
     });
   });
 });

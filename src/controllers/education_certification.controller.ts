@@ -22,7 +22,7 @@ export const deleteEducationCertification = async (
     await EducationCertificationService.deleteOneEducationCertification(
       +education_certification_id
     );
-    return res.status(200).json({
+    return res.status(204).json({
       success: true,
       message: 'Delete successful',
     });
