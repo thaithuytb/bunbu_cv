@@ -35,3 +35,38 @@ export const createWorkExperience = async (req: RequestType, res: Response) => {
     });
   }
 };
+
+export const updateWorkExperience = async (req: RequestType, res: Response) => {
+  const { cv_id, work_experience_id } = req.params;
+  const payloadBody = req.body;
+  try {
+    const findWorkExperience =
+      await WorkExperienceService.findWorkExperienceByIdAndCvId(
+        +work_experience_id,
+        +cv_id
+      );
+    if (!findWorkExperience) {
+      return res.status(404).json({
+        success: false,
+        message: 'Work Experience not found',
+      });
+    }
+    const newWorkExperience =
+      await WorkExperienceService.updateWorkExperienceById(
+        +work_experience_id,
+        payloadBody,
+        findWorkExperience
+      );
+    if (newWorkExperience) {
+      return res.status(200).json({
+        success: true,
+        workExperience: newWorkExperience,
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      errors: error,
+    });
+  }
+};

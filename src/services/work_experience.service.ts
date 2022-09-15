@@ -13,3 +13,27 @@ export const createWorkExperience = async (
   newWorkExperience.curriculum_vitae = cv;
   return await db.getRepository(WorkExperience).save(newWorkExperience);
 };
+
+export const findWorkExperienceByIdAndCvId = async (
+  w_e_id: number,
+  cv_id: number
+): Promise<WorkExperience | null> => {
+  return await db.getRepository(WorkExperience).findOne({
+    where: {
+      id: w_e_id,
+      curriculum_vitae: {
+        id: cv_id,
+      },
+    },
+  });
+};
+
+export const updateWorkExperienceById = async (
+  w_e_id: number,
+  payload: WorkExperience,
+  w_e: WorkExperience
+) => {
+  return await db
+    .getRepository(WorkExperience)
+    .save({ ...w_e, ...payload, id: w_e_id });
+};
