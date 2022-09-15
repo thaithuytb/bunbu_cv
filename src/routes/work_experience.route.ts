@@ -28,4 +28,17 @@ routeWorkExperience.patch(
   }
 );
 
+routeWorkExperience.delete(
+  '/:cv_id/work_experiences/:work_experience_id',
+  (req: Request, res: Response, next: NextFunction) => {
+    verifyToken(req, res, next);
+  },
+  (req: Request, res: Response, next: NextFunction) => {
+    permissionCvs(req, res, next);
+  },
+  (req: Request, res: Response) => {
+    WorkExperienceController.deleteWorkExperience(req, res);
+  }
+);
+
 export default routeWorkExperience;

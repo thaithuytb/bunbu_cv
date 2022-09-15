@@ -37,3 +37,7 @@ export const updateWorkExperienceById = async (
     .getRepository(WorkExperience)
     .save({ ...w_e, ...payload, id: w_e_id });
 };
+
+export const deleteWorkExperienceById = async (w_e_id: number) => {
+  await db.getRepository(WorkExperience).delete({ id: w_e_id });
+};
