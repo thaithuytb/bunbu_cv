@@ -3,6 +3,7 @@ import verifyToken from '../middlewares/verify_token';
 import permissionCvs from '../middlewares/permission_cvs';
 import * as WorkExperienceController from '../controllers/work_experience.controller';
 import * as EducationCertificationController from '../controllers/education_certification.controller';
+import * as ExperienceProjectController from '../controllers/experience_project.controller';
 
 const routeDetailCv = express.Router();
 
@@ -75,6 +76,16 @@ routeDetailCv.delete(
   },
   (req: Request, res: Response) => {
     EducationCertificationController.deleteEducationCertification(req, res);
+  }
+);
+
+routeDetailCv.post(
+  '/:cv_id/work_experiences/:work_experience_id/experience_projects/create',
+  (req: Request, res: Response, next: NextFunction) => {
+    verifyToken(req, res, next);
+  },
+  (req: Request, res: Response) => {
+    ExperienceProjectController.createExperienceProject(req, res);
   }
 );
 
