@@ -17,3 +17,25 @@ export const createExperienceProject = async (
 
   return await db.getRepository(ExperienceProject).save(experienceProject);
 };
+
+export const findExperienceProjectByIdAndCvId = async (
+  e_p_id: number,
+  cv_id: number
+): Promise<ExperienceProject | null> => {
+  return await db.getRepository(ExperienceProject).findOneBy({
+    id: e_p_id,
+    curriculum_vitae: {
+      id: cv_id,
+    },
+  });
+};
+
+export const updateExperienceProject = async (
+  e_p_id: number,
+  payload: ExperienceProject,
+  e_p: ExperienceProject
+) => {
+  return db
+    .getRepository(ExperienceProject)
+    .save({ ...e_p, ...payload, id: e_p_id });
+};

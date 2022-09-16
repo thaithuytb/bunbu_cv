@@ -89,4 +89,17 @@ routeDetailCv.post(
   }
 );
 
+routeDetailCv.patch(
+  '/:cv_id/experience_projects/:experience_project_id',
+  (req: Request, res: Response, next: NextFunction) => {
+    verifyToken(req, res, next);
+  },
+  (req: Request, res: Response, next: NextFunction) => {
+    permissionCvs(req, res, next);
+  },
+  (req: Request, res: Response) => {
+    ExperienceProjectController.updateExperienceProject(req, res);
+  }
+);
+
 export default routeDetailCv;
