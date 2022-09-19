@@ -39,3 +39,9 @@ export const updateExperienceProject = async (
     .getRepository(ExperienceProject)
     .save({ ...e_p, ...payload, id: e_p_id });
 };
+
+export const deleteExperienceProject = async (id: number) => {
+  return await db.getRepository(ExperienceProject).delete({
+    id,
+  });
+};

@@ -88,3 +88,27 @@ export const updateExperienceProject = async (
     });
   }
 };
+
+export const deleteExperienceProject = async (
+  req: RequestType,
+  res: Response
+) => {
+  const { experience_project_id } = req.params;
+  try {
+    const deleteEP = await ExperienceProjectService.deleteExperienceProject(
+      +experience_project_id
+    );
+    if (!deleteEP.affected) {
+      return res.status(404).json({
+        success: false,
+        message: 'Experience Project not found',
+      });
+    }
+    return res.status(204).json({ success: true });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      errors: error,
+    });
+  }
+};
