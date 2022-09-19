@@ -4,7 +4,7 @@ import mockRequest from '../../mocks/mockRequest';
 import mockResponse from '../../mocks/mockResponse';
 import mockNextFunction from '../../mocks/mockNextFunction';
 
-describe('Verify user', () => {
+describe('Verify token', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
