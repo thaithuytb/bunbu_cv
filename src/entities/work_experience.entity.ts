@@ -10,29 +10,29 @@ import { CurriculumVitae } from './curriculum_vitae.entity';
 @Entity('work_experiences')
 export class WorkExperience {
   @PrimaryGeneratedColumn()
-  id: number;
+    id: number;
 
   @Column('varchar', {
     length: 50,
   })
-  time: string;
+    time: string;
 
   @Column('varchar', {
     length: 50,
   })
-  company: string;
+    company: string;
 
   @Column('varchar', {
     length: 200,
   })
-  job_title: string;
+    job_title: string;
 
   @Column('varchar', {
     length: 200,
   })
-  job_description: string;
+    job_description: string;
 
   @ManyToOne(() => CurriculumVitae, (cv) => cv.work_experiences)
   @JoinColumn({ name: 'cv_id' })
-  curriculum_vitae: CurriculumVitae;
+    curriculum_vitae: CurriculumVitae;
 }
