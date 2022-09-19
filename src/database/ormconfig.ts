@@ -12,5 +12,5 @@ export default {
   cli: {
     migrationsDir: 'src/migrations',
   },
-  synchronize: false,
+  synchronize: true,
 } as DataSourceOptions;

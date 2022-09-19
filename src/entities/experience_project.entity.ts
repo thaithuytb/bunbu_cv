@@ -3,7 +3,6 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { CurriculumVitae } from './curriculum_vitae.entity';
@@ -48,9 +47,10 @@ export class ExperienceProject {
   @JoinColumn({ name: 'cv_id' })
     curriculum_vitae: CurriculumVitae;
 
-  @OneToOne(() => WorkExperience, {
-    nullable: true,
-  })
+  @ManyToOne(
+    () => WorkExperience,
+    (workExperience) => workExperience.experience_projects
+  )
   @JoinColumn({ name: 'work_experience_id' })
     work_experience: WorkExperience;
 }
