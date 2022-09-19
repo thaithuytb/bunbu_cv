@@ -74,10 +74,10 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-export const info = async (req: RequestType, res: Response) => {
-  const { userId } = req;
+export const updateInfo = async (req: RequestType, res: Response) => {
+  const { user_id } = req;
   const { username } = req.body;
-  if (!userId) {
+  if (!user_id) {
     return res.status(404).json({
       success: false,
       message: 'User not found',
@@ -85,14 +85,14 @@ export const info = async (req: RequestType, res: Response) => {
   }
 
   try {
-    const user = await UserService.getUserById(userId);
+    const user = await UserService.getUserById(user_id);
     if (!user) {
       return res.status(404).json({
         success: false,
         message: 'User not found',
       });
     }
-    await UserService.updateUsernameById(userId, username);
+    await UserService.updateUsernameById(user_id, username);
     return res.status(200).json({
       success: true,
       message: 'User already updated',

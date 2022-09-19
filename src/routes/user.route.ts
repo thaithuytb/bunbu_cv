@@ -1,8 +1,8 @@
 import express, { NextFunction, Request, Response } from 'express';
-import verifyAdmin from '../middlewares/verity_admin';
-import * as RegisterValidator from '../middlewares/schema_validators/register_validator';
-import * as validatorLogin from '../middlewares/schema_validators/login_validator';
+import verifyAdmin from '../middlewares/verify_admin';
 import * as UserController from '../controllers/user.controller';
+import * as RegisterValidator from '../middlewares/schema_validators/register_validator';
+import * as LoginValidator from '../middlewares/schema_validators/login_validator';
 import * as InfoValidator from '../middlewares/schema_validators/info_validator';
 import validateRequest from '../middlewares/validator_request';
 import verifyToken from '../middlewares/verify_token';
@@ -26,8 +26,8 @@ routeUser.post(
 
 routeUser.post(
   '/login',
-  validatorLogin.emailValidator,
-  validatorLogin.passwordValidator,
+  LoginValidator.emailValidator,
+  LoginValidator.passwordValidator,
   validateRequest,
   (req: Request, res: Response) => {
     UserController.login(req, res);
@@ -40,7 +40,7 @@ routeUser.patch(
   validateRequest,
   verifyToken,
   (req: Request, res: Response) => {
-    UserController.info(req, res);
+    UserController.updateInfo(req, res);
   }
 );
 

@@ -1,6 +1,7 @@
 import { NextFunction, Response } from 'express';
 import RequestType from '../types/requestType';
 import { getUserByEmail } from '../services/user.service';
+import { UserRole } from '../entities/user.entity';
 
 const verifyAdmin = async (
   req: RequestType,
@@ -16,7 +17,7 @@ const verifyAdmin = async (
   }
   try {
     const checkUser = await getUserByEmail(email);
-    if (!checkUser || checkUser.role !== 1) {
+    if (!checkUser || checkUser.role !== UserRole.ADMIN) {
       return res.status(403).json({
         success: false,
         message: 'Forbidden',
@@ -24,7 +25,10 @@ const verifyAdmin = async (
     }
     next();
   } catch (error) {
-    console.log(error);
+    return res.status(500).json({
+      success: false,
+      errors: error,
+    });
   }
 };
 

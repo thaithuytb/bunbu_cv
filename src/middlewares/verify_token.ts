@@ -1,5 +1,5 @@
+import { verify, Secret, JwtPayload } from 'jsonwebtoken';
 import { NextFunction, Response } from 'express';
-import { JwtPayload, Secret, verify } from 'jsonwebtoken';
 import RequestType from '../types/requestType';
 
 const verifyToken = async (
@@ -20,11 +20,21 @@ const verifyToken = async (
       token,
       process.env.ACCESS_TOKEN_SECRET as Secret
     )) as JwtPayload;
-    if (decodeToken) {
-      (req.userId = decodeToken.id), (req.email = decodeToken.email), next();
+
+    if (!decodeToken.id || !decodeToken.email) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized',
+      });
     }
+    req.user_id = decodeToken.id;
+    req.email = decodeToken.email;
+    next();
   } catch (error) {
-    console.log(error);
+    return res.status(401).json({
+      success: false,
+      message: 'Token expires',
+    });
   }
 };
 
