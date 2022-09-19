@@ -41,3 +41,7 @@ export const updateEducationCertificationById = async (
     .getRepository(EducationCertification)
     .save({ ...e_c, ...payload, id: e_c_id });
 };
+
+export const deleteEducationCertification = async (e_c_id: number) => {
+  await db.getRepository(EducationCertification).delete({ id: e_c_id });
+};
