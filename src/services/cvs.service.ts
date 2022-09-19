@@ -18,3 +18,16 @@ export const findCvByIdAndUserId = async (
     },
   });
 };
+
+export const findCvByIdWithJoin = async (
+  id: number
+): Promise<CurriculumVitae | null> => {
+  return await db.getRepository(CurriculumVitae).findOne({
+    where: {
+      id,
+    },
+    relations: {
+      user: true,
+    },
+  });
+};
