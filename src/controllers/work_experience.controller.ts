@@ -70,3 +70,30 @@ export const updateWorkExperience = async (req: RequestType, res: Response) => {
     });
   }
 };
+
+export const deleteWorkExperience = async (req: RequestType, res: Response) => {
+  const { cv_id, work_experience_id } = req.params;
+  try {
+    const findWorkExperience =
+      await WorkExperienceService.findWorkExperienceByIdAndCvId(
+        +work_experience_id,
+        +cv_id
+      );
+    if (!findWorkExperience) {
+      return res.status(404).json({
+        success: false,
+        message: 'Work Experience not found',
+      });
+    }
+
+    await WorkExperienceService.deleteWorkExperienceById(+work_experience_id);
+    return res.status(204).json({
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      errors: error,
+    });
+  }
+};
