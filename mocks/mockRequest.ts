@@ -5,23 +5,26 @@ export default function mockRequest({
   payloadBody,
   params,
   query,
-  userId,
-  email,
   headers,
+  user,
+  email,
+  user_id,
 }: {
   payloadBody?: any;
   params?: Params;
   query?: Query;
-  userId?: number;
-  email?: string;
   headers?: any;
+  user?: any;
+  email?: string;
+  user_id?: number;
 }): RequestType {
   return {
     body: payloadBody || {},
     params: params || {},
     query: query || {},
-    userId: userId || undefined,
+    headers: headers || {},
+    user: user || {},
     email: email || undefined,
-    headers: headers,
+    user_id: user_id || undefined,
   } as RequestType;
 }
