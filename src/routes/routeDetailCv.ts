@@ -2,10 +2,11 @@ import express, { NextFunction, Request, Response } from 'express';
 import verifyToken from '../middlewares/verify_token';
 import permissionCvs from '../middlewares/permission_cvs';
 import * as WorkExperienceController from '../controllers/work_experience.controller';
+import * as CvsController from '../controllers/education_certification.controller';
 
-const routeWorkExperience = express.Router();
+const routeDetailCv = express.Router();
 
-routeWorkExperience.post(
+routeDetailCv.post(
   '/:cv_id/work_experiences/create',
   (req: Request, res: Response, next: NextFunction) => {
     verifyToken(req, res, next);
@@ -15,7 +16,7 @@ routeWorkExperience.post(
   }
 );
 
-routeWorkExperience.patch(
+routeDetailCv.patch(
   '/:cv_id/work_experiences/:work_experience_id',
   (req: Request, res: Response, next: NextFunction) => {
     verifyToken(req, res, next);
@@ -28,7 +29,7 @@ routeWorkExperience.patch(
   }
 );
 
-routeWorkExperience.delete(
+routeDetailCv.delete(
   '/:cv_id/work_experiences/:work_experience_id',
   (req: Request, res: Response, next: NextFunction) => {
     verifyToken(req, res, next);
@@ -41,4 +42,14 @@ routeWorkExperience.delete(
   }
 );
 
-export default routeWorkExperience;
+routeDetailCv.post(
+  '/:cv_id/education_certifications/create',
+  (req: Request, res: Response, next: NextFunction) => {
+    verifyToken(req, res, next);
+  },
+  (req: Request, res: Response) => {
+    CvsController.createEducationCertification(req, res);
+  }
+);
+
+export default routeDetailCv;
