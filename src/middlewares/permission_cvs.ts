@@ -1,6 +1,6 @@
 import RequestType from '../types/requestType';
 import { NextFunction, Response } from 'express';
-import * as CvsService from '../services/cvs.service';
+import * as CvsService from '../services/cv.service';
 import * as UserService from '../services/user.service';
 import { UserRole } from '../entities/user.entity';
 
