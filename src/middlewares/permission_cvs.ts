@@ -1,6 +1,6 @@
 import RequestType from '../types/requestType';
 import { NextFunction, Response } from 'express';
-import * as CvsService from '../services/cv.service';
+import * as CvService from '../services/cv.service';
 import * as UserService from '../services/user.service';
 import { UserRole } from '../entities/user.entity';
 
@@ -19,7 +19,7 @@ const permissionCvs = async (
         message: 'Forbidden',
       });
     }
-    const cv = await CvsService.findCvByIdWithJoin(+cv_id);
+    const cv = await CvService.findCvByIdWithJoin(+cv_id);
     if (!cv) {
       return res.status(404).json({
         success: false,

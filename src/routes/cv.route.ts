@@ -14,4 +14,14 @@ routeCv.get(
   }
 );
 
+routeCv.get(
+  '/',
+  (req: Request, res: Response, next: NextFunction) => {
+    verifyToken(req, res, next);
+  },
+  (req: Request, res: Response) => {
+    CvController.getCvs(req, res);
+  }
+);
+
 export default routeCv;
