@@ -61,3 +61,41 @@ export const getCvs = async (req: RequestType, res: Response) => {
     });
   }
 };
+
+export const updateCv = async (req: RequestType, res: Response) => {
+  const { user_id } = req;
+  const { cv_id } = req.params;
+  const payload = req.body;
+  try {
+    const checkCv = await CvService.findCvWithAllRelationByIdAndUserId(
+      +cv_id,
+      user_id as number
+    );
+    if (!checkCv) {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden',
+      });
+    }
+
+    const cvUpdate = await CvService.updateCv(checkCv, payload);
+    if (cvUpdate) {
+      return res.status(200).json({
+        success: true,
+        cv: cvUpdate,
+      });
+    }
+  } catch (error) {
+    const regex = /.*Cant not found work_experience of[^]*/g;
+    if (regex.test(error as string)) {
+      return res.status(404).json({
+        success: false,
+        message: 'Cant not found work_experience',
+      });
+    }
+    return res.status(500).json({
+      success: false,
+      errors: error,
+    });
+  }
+};
