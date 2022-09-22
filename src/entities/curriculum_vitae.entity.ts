@@ -14,52 +14,57 @@ import { WorkExperience } from './work_experience.entity';
 @Entity('curriculum_vitaes')
 export class CurriculumVitae {
   @PrimaryGeneratedColumn()
-    id: number;
+  id: number;
 
   @Column('varchar', {
     length: 50,
   })
-    name: string;
+  name: string;
 
   @Column('varchar', {
     length: 50,
   })
-    nationality: string;
+  nationality: string;
 
   @Column('varchar', {
     length: 50,
   })
-    gender: string;
+  gender: string;
 
   @Column({
     type: 'longtext',
   })
-    objective: string;
+  objective: string;
 
   @Column({
     type: 'longtext',
   })
-    summary: string;
+  summary: string;
+
+  @Column({
+    default: 0,
+  })
+  isDelete: number;
 
   @ManyToOne(() => User, (user) => user.curriculum_vitaes)
   @JoinColumn({ name: 'user_id' })
-    user: User;
+  user: User;
 
   @OneToMany(
     () => EducationCertification,
     (education_certification) => education_certification.curriculum_vitae
   )
-    education_certifications: EducationCertification[];
+  education_certifications: EducationCertification[];
 
   @OneToMany(
     () => WorkExperience,
     (work_experience) => work_experience.curriculum_vitae
   )
-    work_experiences: WorkExperience[];
+  work_experiences: WorkExperience[];
 
   @OneToMany(
     () => ExperienceProject,
     (experience_project) => experience_project.curriculum_vitae
   )
-    experience_projects: ExperienceProject[];
+  experience_projects: ExperienceProject[];
 }

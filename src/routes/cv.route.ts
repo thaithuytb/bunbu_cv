@@ -24,4 +24,14 @@ routeCv.get(
   }
 );
 
+routeCv.put(
+  '/:cv_id',
+  (req: Request, res: Response, next: NextFunction) => {
+    verifyToken(req, res, next);
+  },
+  (req: Request, res: Response) => {
+    CvController.updateCv(req, res);
+  }
+);
+
 export default routeCv;

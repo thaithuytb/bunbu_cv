@@ -34,6 +34,11 @@ export class WorkExperience {
   })
   job_description: string;
 
+  @Column({
+    default: 0,
+  })
+  isDelete: number;
+
   @ManyToOne(() => CurriculumVitae, (cv) => cv.work_experiences)
   @JoinColumn({ name: 'cv_id' })
   curriculum_vitae: CurriculumVitae;
