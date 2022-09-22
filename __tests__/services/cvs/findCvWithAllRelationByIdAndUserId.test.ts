@@ -2,7 +2,7 @@ import { CurriculumVitae } from '../../../src/entities/curriculum_vitae.entity';
 import { db } from '../../../src/server';
 import * as CvService from '../../../src/services/cv.service';
 
-describe('findCvById', () => {
+describe('findCvWithAllRelationByIdAndUserId', () => {
   beforeAll(() => {
     jest.clearAllMocks();
   });
@@ -18,26 +18,26 @@ describe('findCvById', () => {
     );
 
     db.getRepository = jest.fn().mockReturnValue({
-      findOneBy: mockQueryFindOneBy,
+      findOne: mockQueryFindOneBy,
     });
 
-    const res = await CvService.findCvById(777);
+    const res = await CvService.findCvWithAllRelationByIdAndUserId(777, 77);
 
     expect(mockQueryFindOneBy).toBeCalledTimes(1);
     expect(res).toEqual(expect.any(Object));
     expect(res).toHaveProperty('id');
   });
 
-  test('Should be return a cv', async () => {
+  test('Should be return a null', async () => {
     const mockQueryFindOneBy = jest
       .fn()
-      .mockImplementation((id: number) => Promise.resolve(null));
+      .mockImplementation(() => Promise.resolve(null));
 
     db.getRepository = jest.fn().mockReturnValue({
-      findOneBy: mockQueryFindOneBy,
+      findOne: mockQueryFindOneBy,
     });
 
-    const res = await CvService.findCvById(777);
+    const res = await CvService.findCvWithAllRelationByIdAndUserId(777, 77);
 
     expect(mockQueryFindOneBy).toBeCalledTimes(1);
     expect(res).toEqual(null);

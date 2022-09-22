@@ -2,7 +2,7 @@ import permissionCvs from '../../src/middlewares/permission_cvs';
 import mockResponse from '../../mocks/mockResponse';
 import mockNextFunction from '../../mocks/mockNextFunction';
 import mockRequest from '../../mocks/mockRequest';
-import * as CvsService from '../../src/services/cvs.service';
+import * as CvService from '../../src/services/cv.service';
 import * as UserService from '../../src/services/user.service';
 import { CurriculumVitae } from '../../src/entities/curriculum_vitae.entity';
 import { User } from '../../src/entities/user.entity';
@@ -51,7 +51,7 @@ describe('PermissionCvs', () => {
       );
 
     const mockFindCvByIdWithJoin = jest
-      .spyOn(CvsService, 'findCvByIdWithJoin')
+      .spyOn(CvService, 'findCvByIdWithJoin')
       .mockImplementation(() => Promise.resolve(null));
 
     await permissionCvs(req, res, next);
@@ -75,7 +75,7 @@ describe('PermissionCvs', () => {
         Promise.resolve({ email: 'ngo@gmail.com', role: 1 } as User)
       );
 
-    jest.spyOn(CvsService, 'findCvByIdWithJoin').mockImplementation(() =>
+    jest.spyOn(CvService, 'findCvByIdWithJoin').mockImplementation(() =>
       Promise.resolve({
         id: 7,
         user: {
@@ -103,7 +103,7 @@ describe('PermissionCvs', () => {
       );
 
     const mockFindCvByIdWithJoin = jest
-      .spyOn(CvsService, 'findCvByIdWithJoin')
+      .spyOn(CvService, 'findCvByIdWithJoin')
       .mockImplementation(() =>
         Promise.resolve({
           id: 5,
@@ -134,7 +134,7 @@ describe('PermissionCvs', () => {
       );
 
     const mockFindCvByIdWithJoin = jest
-      .spyOn(CvsService, 'findCvByIdWithJoin')
+      .spyOn(CvService, 'findCvByIdWithJoin')
       .mockImplementation(() =>
         Promise.resolve({
           id: 5,
