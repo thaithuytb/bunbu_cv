@@ -1,5 +1,6 @@
 import * as CvController from '../../../src/controllers/cv.controller';
 import * as CvService from '../../../src/services/cv.service';
+import * as UserService from '../../../src/services/user.service';
 import mockRequest from '../../../mocks/mockRequest';
 import mockResponse from '../../../mocks/mockResponse';
 import { CurriculumVitae } from '../../../src/entities/curriculum_vitae.entity';
@@ -37,6 +38,11 @@ describe('getCvs', () => {
         name: 'test',
       },
     });
+
+    jest
+      .spyOn(UserService, 'isAdmin')
+      .mockImplementation(() => Promise.resolve(true));
+
     jest.spyOn(CvService, 'getCvs').mockImplementation(() =>
       Promise.resolve({
         data: [],
@@ -61,6 +67,11 @@ describe('getCvs', () => {
         name: 'test',
       },
     });
+
+    const mockIsAdminFunction = jest
+      .spyOn(UserService, 'isAdmin')
+      .mockImplementation(() => Promise.resolve(true));
+
     jest.spyOn(CvService, 'getCvs').mockImplementation(() =>
       Promise.resolve({
         data: [{ name: 'test' } as CurriculumVitae],
@@ -70,6 +81,7 @@ describe('getCvs', () => {
 
     await CvController.getCvs(req, res);
 
+    expect(mockIsAdminFunction).toBeCalledTimes(1);
     expect(res.state.status).toEqual(200);
     expect(res.state.json).toEqual({
       success: true,

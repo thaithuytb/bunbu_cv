@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import RequestType from '../types/requestType';
 import * as CvService from '../services/cv.service';
+import * as UserService from '../services/user.service';
 
 export const getCvById = async (req: RequestType, res: Response) => {
   const { cv_id } = req.params;
@@ -42,7 +43,14 @@ export const getCvs = async (req: RequestType, res: Response) => {
         ? 1
         : parseInt(page.toString())
       : 1;
-    const cv = await CvService.getCvs(user_id as number, sortCv, pageCv, q);
+
+    const isAdmin = await UserService.isAdmin(user_id as number);
+    const cv = await CvService.getCvs(
+      isAdmin ? null : (user_id as number),
+      sortCv,
+      pageCv,
+      q
+    );
     if (cv.data.length === 0 || !cv) {
       return res.status(404).json({
         success: false,

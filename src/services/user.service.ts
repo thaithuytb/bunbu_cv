@@ -1,7 +1,7 @@
 import { UpdateResult } from 'typeorm';
 import { Secret, sign } from 'jsonwebtoken';
 import { uuid } from 'uuidv4';
-import { User } from '../entities/user.entity';
+import { User, UserRole } from '../entities/user.entity';
 import { db } from '../server';
 
 export async function getUserByEmail(email: string): Promise<User | null> {
@@ -59,4 +59,15 @@ export async function updateUsernameById(
   username: string
 ): Promise<UpdateResult> {
   return await db.getRepository(User).update(id, { username });
+}
+
+export async function isAdmin(user_id: number) {
+  const user = await db.getRepository(User).findOneBy({
+    id: user_id,
+  });
+  if (user && user.role == UserRole.ADMIN) {
+    return true;
+  }
+
+  return false;
 }
