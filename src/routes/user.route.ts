@@ -11,10 +11,10 @@ const routeUser = express.Router();
 
 routeUser.post(
   '/register',
-  verifyToken,
-  function (req: Request, res: Response, next: NextFunction) {
-    verifyAdmin(req, res, next);
-  },
+  // verifyToken,
+  // function (req: Request, res: Response, next: NextFunction) {
+  //   verifyAdmin(req, res, next);
+  // },
   RegisterValidator.emailValidator,
   RegisterValidator.passwordValidator,
   RegisterValidator.confirmPasswordValidator,

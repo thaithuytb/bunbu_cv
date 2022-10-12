@@ -3,5 +3,4 @@
 /coverage
 /request.http
 ./database.json
-/dist
 /.env
