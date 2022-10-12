@@ -27,7 +27,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const verify_admin_1 = __importDefault(require("../middlewares/verify_admin"));
 const UserController = __importStar(require("../controllers/user.controller"));
 const RegisterValidator = __importStar(require("../middlewares/schema_validators/register_validator"));
 const LoginValidator = __importStar(require("../middlewares/schema_validators/login_validator"));
@@ -35,9 +34,12 @@ const InfoValidator = __importStar(require("../middlewares/schema_validators/inf
 const validator_request_1 = __importDefault(require("../middlewares/validator_request"));
 const verify_token_1 = __importDefault(require("../middlewares/verify_token"));
 const routeUser = express_1.default.Router();
-routeUser.post('/register', verify_token_1.default, function (req, res, next) {
-    (0, verify_admin_1.default)(req, res, next);
-}, RegisterValidator.emailValidator, RegisterValidator.passwordValidator, RegisterValidator.confirmPasswordValidator, validator_request_1.default, function (req, res) {
+routeUser.post('/register', 
+// verifyToken,
+// function (req: Request, res: Response, next: NextFunction) {
+//   verifyAdmin(req, res, next);
+// },
+RegisterValidator.emailValidator, RegisterValidator.passwordValidator, RegisterValidator.confirmPasswordValidator, validator_request_1.default, function (req, res) {
     UserController.register(req, res);
 });
 routeUser.post('/login', LoginValidator.emailValidator, LoginValidator.passwordValidator, validator_request_1.default, (req, res) => {

@@ -7,8 +7,7 @@ exports.default = {
     username: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
     database: process.env.MYSQL_DB,
-    entities: ['dist/entities/**.entity.js'],
-    entitiesTs: ['src/entities/**.entity.ts'],
+    entities: [__dirname + '/../**/*.entity.{js,ts}'],
     migrations: ['src/migrations/*.ts'],
     cli: {
         migrationsDir: 'src/migrations',
