@@ -4,6 +4,7 @@ import permissionCvs from '../middlewares/permission_cvs';
 import * as WorkExperienceController from '../controllers/work_experience.controller';
 import * as EducationCertificationController from '../controllers/education_certification.controller';
 import * as ExperienceProjectController from '../controllers/experience_project.controller';
+import routeCv from './cv.route';
 
 const routeDetailCv = express.Router();
 
@@ -114,5 +115,7 @@ routeDetailCv.delete(
     ExperienceProjectController.deleteExperienceProject(req, res);
   }
 );
+
+routeDetailCv.use('/', routeCv);
 
 export default routeDetailCv;

@@ -2,7 +2,7 @@ import { Response } from 'express';
 import RequestType from '../types/requestType';
 import * as ExperienceProjectService from '../services/experience_project.service';
 import * as WorkExperienceService from '../services/work_experience.service';
-import * as CvsService from '../services/cvs.service';
+import * as CvService from '../services/cv.service';
 
 export const createExperienceProject = async (
   req: RequestType,
@@ -12,7 +12,7 @@ export const createExperienceProject = async (
   const { user_id } = req;
   const payloadBody = req.body;
   try {
-    const checkCv = await CvsService.findCvByIdAndUserId(
+    const checkCv = await CvService.findCvByIdAndUserId(
       +cv_id,
       user_id as number
     );

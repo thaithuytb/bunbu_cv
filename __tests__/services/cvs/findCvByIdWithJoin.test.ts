@@ -1,6 +1,6 @@
 import { CurriculumVitae } from '../../../src/entities/curriculum_vitae.entity';
 import { db } from '../../../src/server';
-import * as CvsService from '../../../src/services/cvs.service';
+import * as CvService from '../../../src/services/cv.service';
 
 describe('findCvByIdWithJoin', () => {
   beforeAll(() => {
@@ -21,7 +21,7 @@ describe('findCvByIdWithJoin', () => {
       findOne: mockQueryFindOneBy,
     });
 
-    const res = await CvsService.findCvByIdWithJoin(777);
+    const res = await CvService.findCvByIdWithJoin(777);
 
     expect(mockQueryFindOneBy).toBeCalledTimes(1);
     expect(res).toEqual(expect.any(Object));
@@ -37,7 +37,7 @@ describe('findCvByIdWithJoin', () => {
       findOne: mockQueryFindOneBy,
     });
 
-    const res = await CvsService.findCvByIdWithJoin(777);
+    const res = await CvService.findCvByIdWithJoin(777);
 
     expect(mockQueryFindOneBy).toBeCalledTimes(1);
     expect(res).toEqual(null);
