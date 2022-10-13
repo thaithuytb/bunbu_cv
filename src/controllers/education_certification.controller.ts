@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import RequestType from '../types/requestType';
-import * as CvsService from '../services/cvs.service';
+import * as CvService from '../services/cv.service';
 import * as EducationCertificationService from '../services/education_certification.service';
 
 export const createEducationCertification = async (
@@ -12,7 +12,7 @@ export const createEducationCertification = async (
   const payloadBody = req.body;
 
   try {
-    const checkCv = await CvsService.findCvByIdAndUserId(
+    const checkCv = await CvService.findCvByIdAndUserId(
       +cv_id,
       user_id as number
     );

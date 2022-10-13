@@ -31,3 +31,22 @@ export const findCvByIdWithJoin = async (
     },
   });
 };
+
+export const findCvByIdAndUserIdWithRelation = async (
+  cv_id: number,
+  user_id: number
+): Promise<CurriculumVitae | null> => {
+  return await db.getRepository(CurriculumVitae).findOne({
+    where: {
+      id: cv_id,
+      user: {
+        id: user_id,
+      },
+    },
+    relations: [
+      'education_certifications',
+      'experience_projects',
+      'work_experiences',
+    ],
+  });
+};
