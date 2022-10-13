@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import RequestType from '../types/requestType';
-import * as CvsService from '../services/cvs.service';
+import * as CvService from '../services/cv.service';
 import * as WorkExperienceService from '../services/work_experience.service';
 
 export const createWorkExperience = async (req: RequestType, res: Response) => {
@@ -8,7 +8,7 @@ export const createWorkExperience = async (req: RequestType, res: Response) => {
   const { user_id } = req;
   const payloadBody = req.body;
   try {
-    const checkCv = await CvsService.findCvByIdAndUserId(
+    const checkCv = await CvService.findCvByIdAndUserId(
       +cv_id,
       user_id as number
     );

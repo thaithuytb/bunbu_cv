@@ -1,6 +1,6 @@
 import mockResponse from '../../../mocks/mockResponse';
 import mockRequest from '../../../mocks/mockRequest';
-import * as CvsService from '../../../src/services/cvs.service';
+import * as CvService from '../../../src/services/cv.service';
 import * as WorkExperienceService from '../../../src/services/work_experience.service';
 import * as WorkExperienceController from '../../../src/controllers/work_experience.controller';
 import { CurriculumVitae } from '../../../src/entities/curriculum_vitae.entity';
@@ -29,7 +29,7 @@ describe('work_experience', () => {
 
     test('Should be return code 500', async () => {
       jest
-        .spyOn(CvsService, 'findCvByIdAndUserId')
+        .spyOn(CvService, 'findCvByIdAndUserId')
         .mockImplementation(() =>
           Promise.reject({ error: 'Server error query' })
         );
@@ -42,7 +42,7 @@ describe('work_experience', () => {
 
     test('Should be return code 403 when Cvs not found', async () => {
       jest
-        .spyOn(CvsService, 'findCvByIdAndUserId')
+        .spyOn(CvService, 'findCvByIdAndUserId')
         .mockImplementation(() => Promise.resolve(null));
 
       await WorkExperienceController.createWorkExperience(req, res);
@@ -56,7 +56,7 @@ describe('work_experience', () => {
 
     test('Should be return code 201 when created educationCertification', async () => {
       jest
-        .spyOn(CvsService, 'findCvByIdAndUserId')
+        .spyOn(CvService, 'findCvByIdAndUserId')
         .mockImplementation(() => Promise.resolve({} as CurriculumVitae));
 
       jest
