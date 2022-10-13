@@ -74,12 +74,12 @@ export const findCvByIdAndUserIdWithRelation = async (
 };
 
 export const getCvs = async (
-  user_id: number,
+  user_id: number | null,
   sort: 'ASC' | 'DESC',
   page: number,
   q: any
 ) => {
-  const limitPage = 4;
+  const limitPage = 2;
   const builder = db.getRepository(CurriculumVitae).createQueryBuilder('cv');
   builder.leftJoinAndSelect(
     'cv.education_certifications',
@@ -92,17 +92,29 @@ export const getCvs = async (
     'e_p',
     'cv.id = e_p.cv_id'
   );
-  builder.where('cv.user.id = :id', {
-    id: user_id,
-  });
-  builder.andWhere(
-    'cv.name like :name and w_e.company like :company and e_p.programming_languages like :p_l',
-    {
-      name: q.name ? `%${q.name}%` : '%',
-      company: q.company ? `%${q.company}%` : '%',
-      p_l: q.language ? `%${q.language}%` : '%',
-    }
-  );
+
+  if (user_id) {
+    builder.where('cv.user.id = :id', {
+      id: user_id,
+    });
+    builder.andWhere(
+      'cv.name like :name and w_e.company like :company and e_p.programming_languages like :p_l',
+      {
+        name: q.name ? `%${q.name}%` : '%',
+        company: q.company ? `%${q.company}%` : '%',
+        p_l: q.language ? `%${q.language}%` : '%',
+      }
+    );
+  } else {
+    builder.where(
+      'cv.name like :name and w_e.company like :company and e_p.programming_languages like :p_l',
+      {
+        name: q.name ? `%${q.name}%` : '%',
+        company: q.company ? `%${q.company}%` : '%',
+        p_l: q.language ? `%${q.language}%` : '%',
+      }
+    );
+  }
   builder.orderBy('cv.id', sort);
   builder.skip((page - 1) * limitPage).take(limitPage);
 
