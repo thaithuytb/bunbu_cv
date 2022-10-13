@@ -1,5 +1,8 @@
 import { db } from '../server';
 import { CurriculumVitae } from '../entities/curriculum_vitae.entity';
+import { EducationCertification } from '../entities/education_certification.entity';
+import { WorkExperience } from '../entities/work_experience.entity';
+import { ExperienceProject } from '../entities/experience_project.entity';
 
 export const findCvById = async (
   id: number
@@ -16,6 +19,25 @@ export const findCvByIdAndUserId = async (
     user: {
       id: user_id,
     },
+  });
+};
+
+export const findCvWithAllRelationByIdAndUserId = async (
+  cv_id: number,
+  user_id: number
+): Promise<CurriculumVitae | null> => {
+  return await db.getRepository(CurriculumVitae).findOne({
+    where: {
+      id: cv_id,
+      user: {
+        id: user_id,
+      },
+    },
+    relations: [
+      'education_certifications',
+      'work_experiences',
+      'experience_projects',
+    ],
   });
 };
 
@@ -88,4 +110,147 @@ export const getCvs = async (
     data: await builder.getMany(),
     page: await builder.getCount(),
   };
+};
+
+export const updateCv = async (
+  cv: CurriculumVitae,
+  cv_update: CurriculumVitae
+) => {
+  const queryRunner = await db.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
+  try {
+    await queryRunner.manager
+      .getRepository(CurriculumVitae)
+      .save({ ...cv_update, id: cv.id });
+    //education_certification
+    if (cv_update.education_certifications.length) {
+      Promise.all(
+        cv_update.education_certifications.map(
+          async (e_c: EducationCertification | any) => {
+            if (e_c.isDelete) {
+              return queryRunner.manager
+                .getRepository(EducationCertification)
+                .delete({ id: e_c.id });
+            }
+            if (!e_c.id) {
+              const newEC = new EducationCertification();
+              newEC.curriculum_vitae = cv;
+              newEC.major = e_c.major ? e_c.major : '';
+              newEC.name = e_c.name ? e_c.name : '';
+              newEC.time = e_c.time ? e_c.time : '';
+              return await queryRunner.manager
+                .getRepository(EducationCertification)
+                .save(newEC);
+            }
+            return queryRunner.manager
+              .getRepository(EducationCertification)
+              .save(e_c);
+          }
+        )
+      );
+    }
+    //remove and update experience_project
+    if (cv_update.experience_projects.length) {
+      await Promise.all(
+        cv_update.experience_projects.map(
+          async (e_p: ExperienceProject | any) => {
+            if (e_p.isDelete) {
+              return queryRunner.manager
+                .getRepository(ExperienceProject)
+                .delete({ id: e_p.id });
+            }
+            if (e_p.id) {
+              return queryRunner.manager
+                .getRepository(ExperienceProject)
+                .save(e_p);
+            }
+          }
+        )
+      );
+    }
+    //work_experiences
+    if (cv_update.work_experiences.length) {
+      await Promise.all(
+        cv_update.work_experiences.map(async (w_e: WorkExperience | any) => {
+          if (w_e.isDelete) {
+            return queryRunner.manager
+              .getRepository(WorkExperience)
+              .delete({ id: w_e.id });
+          }
+          if (!w_e.id) {
+            const newWE = new WorkExperience();
+            newWE.curriculum_vitae = cv;
+            newWE.company = w_e.company ? w_e.company : '';
+            newWE.job_description = w_e.job_description
+              ? w_e.job_description
+              : '';
+            newWE.time = w_e.time ? w_e.time : '';
+            newWE.job_title = w_e.job_title ? w_e.job_title : '';
+
+            return await queryRunner.manager
+              .getRepository(WorkExperience)
+              .save(newWE);
+          }
+          return queryRunner.manager.getRepository(WorkExperience).save(w_e);
+        })
+      );
+    }
+    //create experience_project
+    if (cv_update.experience_projects.length) {
+      await Promise.all(
+        cv_update.experience_projects.map(
+          async (e_p: ExperienceProject | any, index) => {
+            if (!e_p.isDelete && !e_p.id) {
+              const checkWE = await queryRunner.manager
+                .getRepository(WorkExperience)
+                .findOneBy(e_p.work_experience);
+              if (!checkWE) {
+                throw new Error(
+                  `Cant not found work_experience of ${
+                    index + 1
+                  }th experience_projects`
+                );
+              }
+              const newEP = new ExperienceProject();
+              newEP.curriculum_vitae = cv;
+              newEP.project_description = e_p.project_description
+                ? e_p.project_description
+                : '';
+              newEP.work_experience = checkWE;
+              newEP.name = e_p.name ? e_p.name : '';
+              newEP.programming_languages = e_p.programming_languages
+                ? e_p.programming_languages
+                : '';
+              newEP.responsibilities = e_p.responsibilities
+                ? e_p.responsibilities
+                : '';
+              newEP.role = e_p.role ? e_p.role : '';
+              newEP.time = e_p.time ? e_p.time : '';
+
+              return await queryRunner.manager
+                .getRepository(ExperienceProject)
+                .save({ ...newEP, work_experience_id: checkWE.id });
+            }
+          }
+        )
+      );
+    }
+
+    await queryRunner.commitTransaction();
+    //Can return payload
+    return await db.getRepository(CurriculumVitae).findOne({
+      where: { id: cv.id },
+      relations: [
+        'education_certifications',
+        'work_experiences',
+        'experience_projects',
+      ],
+    });
+  } catch (error) {
+    await queryRunner.rollbackTransaction();
+    throw error;
+  } finally {
+    await queryRunner.release();
+  }
 };
