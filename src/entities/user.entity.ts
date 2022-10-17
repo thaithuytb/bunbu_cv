@@ -1,5 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { CurriculumVitae } from './curriculum_vitae.entity';
+import { Image } from './images.entity';
 
 export enum UserRole {
   ADMIN = 1,
@@ -9,30 +10,33 @@ export enum UserRole {
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
-    id: number;
+  id: number;
 
   @Column('varchar', {
     length: 50,
   })
-    email: string;
+  email: string;
 
   @Column('varchar', {
     length: 50,
   })
-    username: string;
+  username: string;
 
   @Column('varchar', {
     length: 100,
   })
-    password: string;
+  password: string;
 
   @Column({
     type: 'enum',
     enum: UserRole,
     default: UserRole.USER,
   })
-    role: UserRole;
+  role: UserRole;
+
+  @OneToMany(() => Image, (image) => image.user)
+  images: Image[];
 
   @OneToMany(() => CurriculumVitae, (cv) => cv.user)
-    curriculum_vitaes: CurriculumVitae[];
+  curriculum_vitaes: CurriculumVitae[];
 }

@@ -17,9 +17,9 @@ describe('createEducationCertification', () => {
     params: {
       cv_id: '6',
     },
-    payloadBody: {
-      id: 10,
-      time: '20-70',
+    file: {
+      path: '/abc/abc',
+      mimetype: 'image/png',
     },
   });
 
