@@ -9,6 +9,7 @@ export default function mockRequest({
   user,
   email,
   user_id,
+  file,
 }: {
   payloadBody?: any;
   params?: Params;
@@ -17,6 +18,7 @@ export default function mockRequest({
   user?: any;
   email?: string;
   user_id?: number;
+  file?: any;
 }): RequestType {
   return {
     body: payloadBody || {},
@@ -26,5 +28,9 @@ export default function mockRequest({
     user: user || {},
     email: email || undefined,
     user_id: user_id || undefined,
+    file: file || {
+      path: '/abc/abc',
+      mimetype: 'image/png',
+    },
   } as RequestType;
 }
