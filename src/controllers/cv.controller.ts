@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import RequestType from '../types/requestType';
 import * as CvService from '../services/cv.service';
+import * as ImageService from '../services/image.service';
 
 export const getCvById = async (req: RequestType, res: Response) => {
   const { cv_id } = req.params;
@@ -65,7 +66,8 @@ export const getCvs = async (req: RequestType, res: Response) => {
 export const updateCv = async (req: RequestType, res: Response) => {
   const { user_id } = req;
   const { cv_id } = req.params;
-  const payload = req.body;
+  const payloadCv = req.body.cv;
+  const image_id = req.body.image_id;
   try {
     const checkCv = await CvService.findCvWithAllRelationByIdAndUserId(
       +cv_id,
@@ -78,7 +80,9 @@ export const updateCv = async (req: RequestType, res: Response) => {
       });
     }
 
-    const cvUpdate = await CvService.updateCv(checkCv, payload);
+    const image = image_id ? await ImageService.getImageById(+image_id) : null;
+
+    const cvUpdate = await CvService.updateCv(checkCv, payloadCv, image);
     if (cvUpdate) {
       return res.status(200).json({
         success: true,

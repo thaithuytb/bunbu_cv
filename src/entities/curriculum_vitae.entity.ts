@@ -4,12 +4,14 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { EducationCertification } from './education_certification.entity';
 import { ExperienceProject } from './experience_project.entity';
 import { User } from './user.entity';
 import { WorkExperience } from './work_experience.entity';
+import { Image } from './image.entity';
 
 @Entity('curriculum_vitaes')
 export class CurriculumVitae {
@@ -67,4 +69,8 @@ export class CurriculumVitae {
     (experience_project) => experience_project.curriculum_vitae
   )
   experience_projects: ExperienceProject[];
+
+  @OneToOne(() => Image, (image) => image.curriculum_vitae)
+  @JoinColumn({ name: 'image_id' })
+  image: Image;
 }

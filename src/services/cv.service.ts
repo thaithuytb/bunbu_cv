@@ -3,6 +3,7 @@ import { CurriculumVitae } from '../entities/curriculum_vitae.entity';
 import { EducationCertification } from '../entities/education_certification.entity';
 import { WorkExperience } from '../entities/work_experience.entity';
 import { ExperienceProject } from '../entities/experience_project.entity';
+import { Image } from '../entities/image.entity';
 
 export const findCvById = async (
   id: number
@@ -114,22 +115,24 @@ export const getCvs = async (
 
 export const updateCv = async (
   cv: CurriculumVitae,
-  cv_update: CurriculumVitae
+  cv_update: CurriculumVitae,
+  image: Image | null
 ) => {
   const queryRunner = await db.createQueryRunner();
   await queryRunner.connect();
   await queryRunner.startTransaction();
   try {
+    const saveCv = {
+      name: cv_update.name,
+      nationality: cv_update.nationality,
+      gender: cv_update.gender,
+      objective: cv_update.objective,
+      summary: cv_update.summary,
+      id: cv.id,
+    };
     await queryRunner.manager
       .getRepository(CurriculumVitae)
-      .save({
-        name: cv_update.name,
-        nationality: cv_update.nationality,
-        gender: cv_update.gender,
-        objective: cv_update.objective,
-        summary: cv_update.summary,
-        id: cv.id,
-      });
+      .save(image ? { ...saveCv, image } : { ...saveCv });
     //education_certification
     if (cv_update.education_certifications.length) {
       Promise.all(
@@ -249,6 +252,7 @@ export const updateCv = async (
     return await db.getRepository(CurriculumVitae).findOne({
       where: { id: cv.id },
       relations: [
+        'image',
         'education_certifications',
         'work_experiences',
         'experience_projects',
