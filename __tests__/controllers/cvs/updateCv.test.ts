@@ -1,8 +1,10 @@
 import * as CvController from '../../../src/controllers/cv.controller';
 import * as CvService from '../../../src/services/cv.service';
+import * as ImageService from '../../../src/services/image.service';
 import mockRequest from '../../../mocks/mockRequest';
 import mockResponse from '../../../mocks/mockResponse';
 import { CurriculumVitae } from '../../../src/entities/curriculum_vitae.entity';
+import { Image } from '../../../src/entities/image.entity';
 
 describe('updateCv', () => {
   beforeAll(() => {
@@ -39,6 +41,10 @@ describe('updateCv', () => {
     jest
       .spyOn(CvService, 'findCvWithAllRelationByIdAndUserId')
       .mockImplementation(() => Promise.resolve({ id: 7 } as CurriculumVitae));
+
+    jest
+      .spyOn(ImageService, 'getImageById')
+      .mockImplementation(() => Promise.resolve({ id: 7 } as Image));
 
     jest
       .spyOn(CvService, 'updateCv')

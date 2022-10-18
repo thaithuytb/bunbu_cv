@@ -4,6 +4,7 @@ import { db } from '../../../src/server';
 import { EducationCertification } from '../../../src/entities/education_certification.entity';
 import { WorkExperience } from '../../../src/entities/work_experience.entity';
 import { ExperienceProject } from '../../../src/entities/experience_project.entity';
+import { Image } from '../../../src/entities/image.entity';
 
 describe('updateCv', () => {
   beforeAll(() => {
@@ -137,7 +138,8 @@ describe('updateCv', () => {
             programming_languages: 'string',
           },
         ],
-      } as CurriculumVitae
+      } as CurriculumVitae,
+      { id: 7 } as Image
     );
 
     expect(res).toEqual({ id: 7 } as CurriculumVitae);
