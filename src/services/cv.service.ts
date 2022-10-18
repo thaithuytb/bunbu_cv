@@ -4,6 +4,7 @@ import { EducationCertification } from '../entities/education_certification.enti
 import { WorkExperience } from '../entities/work_experience.entity';
 import { ExperienceProject } from '../entities/experience_project.entity';
 import { User } from '../entities/user.entity';
+import { Image } from '../entities/image.entity';
 
 export const findCvById = async (
   id: number
@@ -36,7 +37,11 @@ export const findCvByIdWithJoin = async (
   });
 };
 
-export const createCv = async (user: User, payload: CurriculumVitae) => {
+export const createCv = async (
+  user: User,
+  payload: CurriculumVitae,
+  image: Image | null
+) => {
   const queryRunner = await db.createQueryRunner();
   await queryRunner.connect();
   await queryRunner.startTransaction();
@@ -48,6 +53,7 @@ export const createCv = async (user: User, payload: CurriculumVitae) => {
     newCv.nationality = payload.nationality ? payload.nationality : '';
     newCv.objective = payload.objective ? payload.objective : '';
     newCv.summary = payload.summary ? payload.summary : '';
+    image ? (newCv.image = image) : null;
 
     const createCv = await queryRunner.manager
       .getRepository(CurriculumVitae)
@@ -127,6 +133,7 @@ export const createCv = async (user: User, payload: CurriculumVitae) => {
     return await db.getRepository(CurriculumVitae).findOne({
       where: { ...createCv },
       relations: [
+        'image',
         'education_certifications',
         'work_experiences',
         'experience_projects',

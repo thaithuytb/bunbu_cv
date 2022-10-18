@@ -11,46 +11,51 @@ import { WorkExperience } from './work_experience.entity';
 @Entity('experience_projects')
 export class ExperienceProject {
   @PrimaryGeneratedColumn()
-    id: number;
+  id: number;
 
   @Column('varchar', {
     length: 100,
   })
-    name: string;
+  name: string;
 
   @Column('varchar', {
     length: 50,
   })
-    time: string;
+  time: string;
 
   @Column('varchar', {
     length: 200,
   })
-    project_description: string;
+  project_description: string;
 
   @Column('varchar', {
     length: 100,
   })
-    role: string;
+  role: string;
 
   @Column('varchar', {
     length: 200,
   })
-    responsibilities: string;
+  responsibilities: string;
 
   @Column('varchar', {
     length: 200,
   })
-    programming_languages: string;
+  programming_languages: string;
+
+  @Column({
+    default: 0,
+  })
+  isDelete: number;
 
   @ManyToOne(() => CurriculumVitae, (cv) => cv.experience_projects)
   @JoinColumn({ name: 'cv_id' })
-    curriculum_vitae: CurriculumVitae;
+  curriculum_vitae: CurriculumVitae;
 
   @ManyToOne(
     () => WorkExperience,
     (workExperience) => workExperience.experience_projects
   )
   @JoinColumn({ name: 'work_experience_id' })
-    work_experience: WorkExperience;
+  work_experience: WorkExperience;
 }

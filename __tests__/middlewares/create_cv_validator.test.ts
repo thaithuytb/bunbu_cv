@@ -12,9 +12,11 @@ describe('CreateCvValidator', () => {
   test('Should be return code 400 and message err when validator error', async () => {
     const req = mockRequest({
       payloadBody: {
-        name: '',
-        nationality: '',
-        gender: '',
+        cv: {
+          name: '',
+          nationality: '',
+          gender: '',
+        },
       },
     });
     const res = mockResponse();
@@ -36,9 +38,11 @@ describe('CreateCvValidator', () => {
   test('Should be call nextFunction when payload correct', async () => {
     const req = mockRequest({
       payloadBody: {
-        name: 'dev',
-        nationality: 'vietnam',
-        gender: 'male',
+        cv: {
+          name: 'dev',
+          nationality: 'vietnam',
+          gender: 'male',
+        },
       },
     });
     const res = mockResponse();
